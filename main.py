@@ -1,6 +1,7 @@
 from joystick import Joystick
 import time
 import pygame
+from model.player import Player
 
 ### global parameter
 swt_channel = 0
@@ -15,6 +16,8 @@ done = False
 clock = pygame.time.Clock()
 
 joystick = Joystick()
+player = Player()
+
 pygame.init()
 
 while True:
@@ -24,9 +27,8 @@ while True:
     vry_pos = joystick.readChannel(vry_channel)
     swt_val = joystick.readChannel(swt_channel)
 
+    color = player.get_changed_color(vrx_pos, vry_pos, swt_val)
+
     print("VRx : {} VRy: {} SW: {}".format(vrx_pos, vry_pos, swt_val))
-    color[0] = 0 if vrx_pos > 500 else 255
-    color[1] = 0 if vry_pos > 500 else 255
-    color[2] = 0 if swt_val > 500 else 255
     
     pygame.display.update()
