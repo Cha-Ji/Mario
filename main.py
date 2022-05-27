@@ -23,12 +23,15 @@ pygame.init()
 while True:
     clock.tick(10)
     screen.fill(color)
-    vrx_pos = joystick.readChannel(vrx_channel)
-    vry_pos = joystick.readChannel(vry_channel)
-    swt_val = joystick.readChannel(swt_channel)
-
+    vrx_pos, vry_pos, swt_val = get_read_channels()
     color = player.get_changed_color(vrx_pos, vry_pos, swt_val)
 
     print("VRx : {} VRy: {} SW: {}".format(vrx_pos, vry_pos, swt_val))
     
     pygame.display.update()
+
+def get_read_channels():
+    return (joystick.readChannel(vrx_channel),
+    joystick.readChannel(vry_channel),
+    joystick.readChannel(swt_channel))
+    
