@@ -17,6 +17,7 @@ clock = pygame.time.Clock()
 
 joystick = Joystick()
 player = Player()
+field = Field()
 
 pygame.init()
 
@@ -25,8 +26,10 @@ while True:
     screen.fill(color)
     vrx_pos, vry_pos, swt_val = get_read_channels()
     color = player.get_changed_color(vrx_pos, vry_pos, swt_val)
+    set_directions(vrx_pos, vry_pos, swt_val)
 
     print("VRx : {} VRy: {} SW: {}".format(vrx_pos, vry_pos, swt_val))
+    print("cur index: {}".format(field.cur_index))
     
     pygame.display.update()
 
@@ -34,4 +37,13 @@ def get_read_channels():
     return (joystick.readChannel(vrx_channel),
     joystick.readChannel(vry_channel),
     joystick.readChannel(swt_channel))
+    
+def set_directions(x, y, swt):
+    if 0 <= y < 500:
+        field.move_back(1)
+    elif 500 <= y < 1000:
+        field.move_front(2)
+        
+        
+
     
