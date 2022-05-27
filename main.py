@@ -35,6 +35,7 @@ def get_read_channels():
     joystick.readChannel(swt_channel))
     
 def set_directions(x, y, swt):
+    global boost_count
     if boost_count > 0:
         distance = 2
         boost_count -= 1
@@ -66,13 +67,12 @@ if __name__ == "__main__":
 
         # set gpio
         vrx_pos, vry_pos, swt_val = get_read_channels()
-        switch = GPIO.input(switch)
 
         # run
         color = player.get_changed_color(vrx_pos, vry_pos, swt_val)
         set_directions(vrx_pos, vry_pos, swt_val)
 
-        if GPIO.input(switch) == 0:
+        if GPIO.input(SWITCH) == 0:
             set_boost()
 
         print("VRx : {} VRy: {} SW: {}".format(vrx_pos, vry_pos, swt_val))
