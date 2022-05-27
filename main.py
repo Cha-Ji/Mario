@@ -20,7 +20,6 @@ joystick = Joystick()
 player = Player()
 field = Field()
 
-pygame.init()
 
 def get_read_channels():
     return (joystick.readChannel(vrx_channel),
@@ -32,8 +31,15 @@ def set_directions(x, y, swt):
         field.move_back(1)
     elif 500 <= y < 1000:
         field.move_front(2)
+
+    if 0 <= x < 500:
+        field.turn_left(1)
+    elif 500 <= x < 1000:
+        field.turn_right(1)
  
 if __name__ == "__main__":
+    pygame.init()
+
     while True:
         clock.tick(10)
         screen.fill(color)
