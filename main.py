@@ -71,10 +71,13 @@ if __name__ == "__main__":
         # run
         color = player.get_changed_color(vrx_pos, vry_pos, swt_val)
         set_directions(vrx_pos, vry_pos, swt_val)
-        set_boost()
+
+        if GPIO.input(switch) == 0:
+            set_boost()
 
         print("VRx : {} VRy: {} SW: {}".format(vrx_pos, vry_pos, swt_val))
         print("cur index: {}".format(field.cur_index))
         
+        print("boost: {}".format(boost_count))
         pygame.display.update()
     
