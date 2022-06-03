@@ -1,33 +1,63 @@
 import pygame
-from pygame.rect import *
 import random
+from pygame.rect import *
+import time
 
-###################################################################
-###################################################################
+from joystick import Joystick
+import RPi.GPIO as GPIO
+
+# init global parameter
+isActive = True
+SCREEN_WIDTH = 400
+SCREEN_HEIGHT = 600
+move = Rect(0,0,0,0)
+time_delay_500ms = 0
+time_dealy_4sec = 0
+toggle = False
+score = 0
+isGameOver = False
+IMG_PATH = "img/"
+
+swt_channel = 0
+vrx_channel = 1
+vry_channel = 2
+SWITCH = 27
+DELAY = 0.5
+
+joystick = Joystick()
+
+def set_gpio():
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
+    GPIO.setup(SWITCH, GPIO.IN, GPIO.PUD_UP)
+
+def get_read_channels():
+    return (joystick.readChannel(vrx_channel),
+    joystick.readChannel(vry_channel),
+    joystick.readChannel(swt_channel))
+
 def restart():
     global isGameOver, score
     isGameOver = False
     score = 0
     for i in range(len(star)):
         recStar[i].y = -1    
-###################################################################
-###################################################################
-def eventProcess():
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                pygame.quit()
 
-            if event.key == pygame.K_LEFT:
-                move.x = -1
-            if event.key == pygame.K_RIGHT:
-                move.x = 1
-            if event.key == pygame.K_UP:
-                move.y = -1
-            if event.key == pygame.K_DOWN:
-                move.y = 1
-            if event.key == pygame.K_r:
-                restart()
+def eventProcess(x, y, swt):
+    #pygame.quit()
+
+    # TODO: set detail value
+    if 0 <= x < 500:
+        move.x = -1
+    if 520 < x:
+        move.x = 1
+    if 0 <= y < 500:
+        move.y = -1
+    if 520 <= y:
+        move.y = 1
+
+    if GPIO.input(SWITCH) == 0:
+        restart()
 ###################################################################
 ###################################################################
 def movePlayer():
@@ -111,54 +141,40 @@ def setText():
             'press R - Restart', True, 'red'), (140, 320, 0, 0))
 ###################################################################
 ###################################################################
-#1.변수초기화
-isActive = True
-SCREEN_WIDTH = 400
-SCREEN_HEIGHT = 600
-move = Rect(0,0,0,0)
-time_delay_500ms = 0
-time_dealy_4sec = 0
-toggle = False
-score = 0
-isGameOver = False
-
-#2.스크린생성
-pygame.init()
-SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption('CodingNoew!!')
 
 #3. player 생성
-player = pygame.image.load('player.png')
+player = pygame.image.load(IMG_PATH + 'player.png')
 player = pygame.transform.scale(player,(20,30))
 recPlayer = player.get_rect()
 recPlayer.centerx = (SCREEN_WIDTH/2)
 recPlayer.centery = (SCREEN_HEIGHT/2)
 #4. 유성 생성
-star = [pygame.image.load('star.png') for i in range(40)]
+star = [pygame.image.load(IMG_PATH + 'star.png') for i in range(40)]
 recStar = [None for i in range(len(star))]
 for i in range(len(star)):
     star[i] = pygame.transform.scale(star[i], (20, 20))
     recStar[i] = star[i].get_rect()
     recStar[i].y = -1
     
-#5. 기타
-clock = pygame.time.Clock()
+if __name__ == "__main__":
+    set_gpio()
+    pygame.init()
+    SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    clock = pygame.time.Clock()
+    # TODO: lcd screen
 
-#####반복####
-while isActive:
-    #1.화면 지움
-    SCREEN.fill((0,0,0))
-    #2.이벤트처리
-    eventProcess()
-    #3.플레이어 이동
-    movePlayer()
-    #4.유성 생성 및 이동
-    moveStar()
-    #5.충돌 확인
-    CheckCollision()
-    #6.text업데이트
-    setText()
-    #7.화면 갱신
-    pygame.display.flip()
-    clock.tick(100)
-#####반복####
+    while isActive:
+        # set gpio
+        vrx_pos, vry_pos, swt_val = get_read_channels()
+
+        SCREEN.fill((0,0,0))
+        eventProcess(vrx_pos, vry_pos, swt_val)
+        movePlayer()
+        moveStar()
+        CheckCollision()
+        #setText()
+        pygame.display.flip()
+        clock.tick(100)
+
+        print("x : {} y : {} sw : {}".format(vrx_pos, vry_pos, swt_val))
+ 
