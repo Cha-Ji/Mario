@@ -2,11 +2,11 @@ import pygame
 from pygame.rect import *
 import time
 
-from player import Player
-from rec_player import RectPlayer
-from star import Star
+from model.player import Player
+from model.rec_player import RectPlayer
+from model.star import Star
 
-from joystick import Joystick
+from model.joystick import Joystick
 import RPi.GPIO as GPIO
 
 # init global parameter
