@@ -30,6 +30,8 @@ class RectPlayer:
             recMissile[i] = missile[i].get_rect()
             recMissile[i].y = -1
 
+        return recMissile
+
     def restart(self):
         for star in self.recStar:
             star.y = -1
@@ -82,22 +84,22 @@ class RectPlayer:
                 self.recStar[i].y += 1
 
             if self.recStar[i].y > self.SCREEN_HEIGHT:
-                self.recStar[i].y = 0
+                self.recStar[i].y = -1
 
     def isCollisionMissile(self):
         for rec in self.recStar:
             if rec.y == -1:
                 continue
 
-            for recM in recMissile:
+            for recM in self.recMissile:
                 if recM.y == -1:
                     continue
-                if rec.top < self.recPlayer.bottom \
-                    and self.recPlayer.top < rec.bottom \
-                    and rec.left < self.recPlayer.right \
-                    and self.recPlayer.left < rec.right:
+                if rec.top < recM.bottom \
+                    and recM.top < rec.bottom \
+                    and rec.left < recM.right \
+                    and recM.left < rec.right:
 
-                    rec.y = recM.y = -1
+                    rec.y = recM.y = 0
                     
                     return True
 
@@ -108,20 +110,17 @@ class RectPlayer:
             return
         for i in range(len(self.recMissile)):
             if self.recMissile[i].y == -1:
-                self.recMissile[i].x = recPlayer.x
-                self.recMissile[i].y = recPlayer.y
+                self.recMissile[i].x = self.recPlayer.x
+                self.recMissile[i].y = self.recPlayer.y
                 break
 
     def moveMissile(self):
-        self.makeMissile()
+        # self.makeMissile()
         for i in range(len(self.recMissile)):
             if self.recMissile[i].y == -1:
                 continue
             if not self.isGameOver:
-                self.recMissile[i].y -= -1:
+                self.recMissile[i].y -= 1
             if self.recMissile[i].y < 0:
                 self.recMissile[i].y = -1
-
-        
-
 
