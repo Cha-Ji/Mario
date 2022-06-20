@@ -5,6 +5,7 @@ import time
 from model.player import Player
 from model.rec_player import RectPlayer
 from model.star import Star
+from model.missile import Missile
 
 from model.joystick import Joystick
 import RPi.GPIO as GPIO
@@ -22,11 +23,9 @@ SWITCH = 27
 joystick = Joystick()
 player = Player(pygame).player
 star = Star().createStar(pygame)
+missile = Missile().createMissile(pygame)
 
 rectObject = RectPlayer(player.get_rect(), star, (SCREEN_WIDTH, SCREEN_HEIGHT))
-recPlayer = rectObject.recPlayer
-recStar = rectObject.recStar
-
 
 def set_gpio():
     GPIO.setmode(GPIO.BCM)
@@ -41,7 +40,7 @@ def get_read_channels():
 def restart():
     global score
     score = 0
-    recStar.restart()
+    rectObject.recStar.restart()
 
 def eventProcess(x, y, swt):
     #pygame.quit()
@@ -70,11 +69,15 @@ def moveObject(SCREEN):
     vrx_pos, vry_pos, swt_val = get_read_channels()
     eventProcess(vrx_pos, vry_pos, swt_val)
     rectObject.movePlayer(move)
-    SCREEN.blit(player, recPlayer)
+    SCREEN.blit(player, rectObject.recPlayer)
 
     rectObject.moveStar()
     for i in range(len(star)):
         SCREEN.blit(star[i], rectObject.recStar[i])
+
+    rectObject.moveMissile()
+    for i in range(len(missile)):
+        SCREEN.blit(missile[i], rectObject.recMissile[i])
 
     rectObject.isGameOver = rectObject.isCollision()
     score += 1

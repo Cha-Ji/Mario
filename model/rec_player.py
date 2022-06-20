@@ -1,7 +1,7 @@
 import random
 
 class RectPlayer:
-    def __init__(self, rect, star, SCREEN_SIZE):
+    def __init__(self, rect, star, missile, SCREEN_SIZE):
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = SCREEN_SIZE
 
         self.recPlayer = rect
@@ -9,6 +9,7 @@ class RectPlayer:
         self.recPlayer.centery = (self.SCREEN_HEIGHT / 2)
 
         self.recStar = self.__createRecStar(star)
+        self.recMissile = self.__createRecMissile(missile)
 
         self.time_delay_500ms = 0
 
@@ -22,6 +23,12 @@ class RectPlayer:
             recStar[i].y = -1
 
         return recStar
+
+    def __createRecMissile(self, missile):
+        recMissile = [None for i in range(len(missile))]
+        for i in range(len(missile)):
+            recMissile[i] = missile[i].get_rect()
+            recMissile[i].y = -1
 
     def restart(self):
         for star in self.recStar:
@@ -52,10 +59,10 @@ class RectPlayer:
                 and self.recPlayer.top < rec.bottom \
                 and rec.left < self.recPlayer.right \
                 and self.recPlayer.left < rec.right:
-                print('충돌')
                 return True
+
         return False
- 
+
     def makeStar(self):
         if self.isGameOver:
             return
@@ -76,4 +83,45 @@ class RectPlayer:
 
             if self.recStar[i].y > self.SCREEN_HEIGHT:
                 self.recStar[i].y = 0
- 
+
+    def isCollisionMissile(self):
+        for rec in self.recStar:
+            if rec.y == -1:
+                continue
+
+            for recM in recMissile:
+                if recM.y == -1:
+                    continue
+                if rec.top < self.recPlayer.bottom \
+                    and self.recPlayer.top < rec.bottom \
+                    and rec.left < self.recPlayer.right \
+                    and self.recPlayer.left < rec.right:
+
+                    rec.y = recM.y = -1
+                    
+                    return True
+
+        return False
+
+    def makeMissile(self):
+        if self.isGameOver:
+            return
+        for i in range(len(self.recMissile)):
+            if self.recMissile[i].y == -1:
+                self.recMissile[i].x = recPlayer.x
+                self.recMissile[i].y = recPlayer.y
+                break
+
+    def moveMissile(self):
+        self.makeMissile()
+        for i in range(len(self.recMissile)):
+            if self.recMissile[i].y == -1:
+                continue
+            if not self.isGameOver:
+                self.recMissile[i].y -= -1:
+            if self.recMissile[i].y < 0:
+                self.recMissile[i].y = -1
+
+        
+
+
