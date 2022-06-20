@@ -14,18 +14,19 @@ isActive = True
 SCREEN_WIDTH = 400
 SCREEN_HEIGHT = 600
 move = Rect(0,0,0,0)
-time_dealy_4sec = 0
-toggle = False
 score = 0
-IMG_PATH = "img/"
 
-swt_channel = 0
-vrx_channel = 1
-vry_channel = 2
+swt_channel, vrx_channel, vry_channel = 0, 1, 2
 SWITCH = 27
-DELAY = 0.5
 
 joystick = Joystick()
+player = Player(pygame).player
+star = Star().createStar(pygame)
+
+rectObject = RectPlayer(player.get_rect(), star, (SCREEN_WIDTH, SCREEN_HEIGHT))
+recPlayer = rectObject.recPlayer
+recStar = rectObject.recStar
+
 
 def set_gpio():
     GPIO.setmode(GPIO.BCM)
@@ -63,13 +64,20 @@ def eventProcess(x, y, swt):
         restart()
 
 
-player = Player(pygame).player
+def moveObject(SCREEN):
+    global score
 
-star = Star().createStar(pygame)
+    vrx_pos, vry_pos, swt_val = get_read_channels()
+    eventProcess(vrx_pos, vry_pos, swt_val)
+    rectObject.movePlayer(move)
+    SCREEN.blit(player, recPlayer)
 
-rectObject = RectPlayer(player.get_rect(), star, (SCREEN_WIDTH, SCREEN_HEIGHT))
-recPlayer = rectObject.recPlayer
-recStar = rectObject.recStar
+    rectObject.moveStar()
+    for i in range(len(star)):
+        SCREEN.blit(star[i], rectObject.recStar[i])
+
+    rectObject.isGameOver = rectObject.isCollision()
+    score += 1
 
 if __name__ == "__main__":
     set_gpio()
@@ -78,24 +86,9 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
 
     while isActive and not rectObject.isGameOver:
-        # set gpio
-        vrx_pos, vry_pos, swt_val = get_read_channels()
-
         SCREEN.fill((0,0,0))
-
-        eventProcess(vrx_pos, vry_pos, swt_val)
-        rectObject.movePlayer(move)
-        SCREEN.blit(player, recPlayer)
-
-        rectObject.moveStar()
-        for i in range(len(star)):
-            SCREEN.blit(star[i], rectObject.recStar[i])
-
-        rectObject.isGameOver = rectObject.isCollision()
-        score += 1
+        moveObject(SCREEN)
 
         pygame.display.flip()
         clock.tick(100)
 
-        print("x : {} y : {} sw : {}".format(vrx_pos, vry_pos, swt_val))
- 
