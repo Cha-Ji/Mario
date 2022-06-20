@@ -18,14 +18,14 @@ move = Rect(0,0,0,0)
 score = 0
 
 swt_channel, vrx_channel, vry_channel = 0, 1, 2
-SWITCH = 27
+SWITCH = 21
 
 joystick = Joystick()
 player = Player(pygame).player
 star = Star().createStar(pygame)
 missile = Missile().createMissile(pygame)
 
-rectObject = RectPlayer(player.get_rect(), star, (SCREEN_WIDTH, SCREEN_HEIGHT))
+rectObject = RectPlayer(player.get_rect(), star, missile, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 def set_gpio():
     GPIO.setmode(GPIO.BCM)
@@ -60,7 +60,7 @@ def eventProcess(x, y, swt):
         move.y = 1
 
     if GPIO.input(SWITCH) == 0:
-        restart()
+        rectObject.makeMissile()
 
 
 def moveObject(SCREEN):
@@ -80,6 +80,7 @@ def moveObject(SCREEN):
         SCREEN.blit(missile[i], rectObject.recMissile[i])
 
     rectObject.isGameOver = rectObject.isCollision()
+    rectObject.isCollisionMissile()
     score += 1
 
 if __name__ == "__main__":
