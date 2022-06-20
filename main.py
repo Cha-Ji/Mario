@@ -46,20 +46,23 @@ def restart():
 def eventProcess(x, y, swt):
     #pygame.quit()
 
-    # TODO: set detail value
     if 0 <= x < 500:
         move.x = -1
-    if 520 < x:
+    elif 500 <= x < 520:
+        move.x = 0
+    else:
         move.x = 1
+
     if 0 <= y < 500:
         move.y = -1
-    if 520 <= y:
+    elif 500 <= y < 520:
+        move.y = 0
+    else:
         move.y = 1
 
     if GPIO.input(SWITCH) == 0:
         restart()
-###################################################################
-###################################################################
+
 def movePlayer():
     if not isGameOver:
         recPlayer.x += move.x
