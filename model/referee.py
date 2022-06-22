@@ -1,11 +1,6 @@
-class Game:
+class Referee:
 
     def __init__(self):
-        self.isGameOver = False
-
-    def restart(self, recStar):
-        for star in recStar:
-            star.y = -1
         self.isGameOver = False
 
     def __is_collision(self, me, target):
